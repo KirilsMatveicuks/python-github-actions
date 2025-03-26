@@ -21,10 +21,10 @@ runs:
         path: python-greetings
 
     - name: Stop existing service
-      run: pm2 delete greetings-app-${{ inputs.env_name }} || true
-      shell: bash
+      shell: cmd
+      run: pm2 delete greetings-app-${{ inputs.env_name }} || exit /b 0
 
     - name: Start application
+      shell: cmd
       run: pm2 start app.py --name greetings-app-${{ inputs.env_name }} -- --port ${{ inputs.port }}
-      shell: bash
       working-directory: python-greetings

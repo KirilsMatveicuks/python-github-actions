@@ -18,11 +18,11 @@ runs:
         path: course-js-api-framework
 
     - name: Install dependencies
+      shell: cmd
       run: npm install
-      shell: bash
       working-directory: course-js-api-framework
 
     - name: Run tests
+      shell: cmd
       run: npm run greetings greetings_${{ inputs.env_name }}
-      shell: bash
       working-directory: course-js-api-framework

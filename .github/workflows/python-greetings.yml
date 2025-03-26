@@ -20,21 +20,20 @@ jobs:
           path: python-greetings
 
       - name: Check Python version
-        shell: powershell
+        shell: cmd
         run: python --version
 
       - name: Install dependencies
-        shell: powershell
+        shell: cmd
         run: pip install -r requirements.txt
         working-directory: python-greetings
-
 
   deploy-to-dev:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
       - name: Deploy to Dev
-        uses: ./github/actions/deploy
+        uses: ./.github/actions/deploy
         with:
           env_name: dev
           port: 7001
@@ -44,7 +43,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run Tests on Dev
-        uses: ./github/actions/test
+        uses: ./.github/actions/test
         with:
           env_name: dev
 
@@ -53,7 +52,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy to Staging
-        uses: ./github/actions/deploy
+        uses: ./.github/actions/deploy
         with:
           env_name: staging
           port: 7002
@@ -63,7 +62,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run Tests on Staging
-        uses: ./github/actions/test
+        uses: ./.github/actions/test
         with:
           env_name: staging
 
@@ -72,7 +71,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy to Preprod
-        uses: ./github/actions/deploy
+        uses: ./.github/actions/deploy
         with:
           env_name: preprod
           port: 7003
@@ -82,7 +81,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run Tests on Preprod
-        uses: ./github/actions/test
+        uses: ./.github/actions/test
         with:
           env_name: preprod
 
@@ -91,7 +90,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy to Prod
-        uses: ./github/actions/deploy
+        uses: ./.github/actions/deploy
         with:
           env_name: prod
           port: 7004
@@ -101,6 +100,6 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run Tests on Prod
-        uses: ./github/actions/test
+        uses: ./.github/actions/test
         with:
           env_name: prod
