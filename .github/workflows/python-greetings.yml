@@ -1,10 +1,7 @@
-name: Python Greetings CI/CD
+name: Python Delivery Pipeline
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -22,15 +19,18 @@ jobs:
           path: python-greetings
 
       - name: Install dependencies
-        run: pip3 install -r requirements.txt
-        shell: bash
+        run: python -m pip install -r requirements.txt
+        shell: cmd
         working-directory: python-greetings
 
   deploy-to-dev:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
-      - name: Deploy to dev
+      - name: Checkout repository
+        uses: actions/checkout@v4  
+
+      - name: Deploy to Dev
         uses: ./.github/actions/deploy
         with:
           environment: dev
@@ -40,64 +40,10 @@ jobs:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
-      - name: Run tests on dev
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests on Dev
         uses: ./.github/actions/test
         with:
           environment: dev
-
-  deploy-to-staging:
-    needs: tests-on-dev
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to staging
-        uses: ./.github/actions/deploy
-        with:
-          environment: staging
-          port: 7002
-
-  tests-on-staging:
-    needs: deploy-to-staging
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on staging
-        uses: ./.github/actions/test
-        with:
-          environment: staging
-
-  deploy-to-preprod:
-    needs: tests-on-staging
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to preprod
-        uses: ./.github/actions/deploy
-        with:
-          environment: preprod
-          port: 7003
-
-  tests-on-preprod:
-    needs: deploy-to-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on preprod
-        uses: ./.github/actions/test
-        with:
-          environment: preprod
-
-  deploy-to-prod:
-    needs: tests-on-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to prod
-        uses: ./.github/actions/deploy
-        with:
-          environment: prod
-          port: 7004
-
-  tests-on-prod:
-    needs: deploy-to-prod
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on prod
-        uses: ./.github/actions/test
-        with:
-          environment: prod
