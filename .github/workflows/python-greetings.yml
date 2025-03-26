@@ -20,12 +20,12 @@ jobs:
           path: python-greetings
 
       - name: Check Python version
-        run: python3 --version
-        shell: bash
+        shell: pwsh
+        run: python --version
 
       - name: Install dependencies
-        run: pip3 install -r requirements.txt
-        shell: bash
+        shell: pwsh
+        run: pip install -r requirements.txt
         working-directory: python-greetings
 
 
