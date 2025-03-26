@@ -1,30 +1,24 @@
-name: Python Greetings Deployment Pipeline
+name: Python Greetings Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
+      - name: Checkout pipeline repo
         uses: actions/checkout@v4
 
-      - name: Clone python-greetings repository
+      - name: Checkout python-greetings repo
         uses: actions/checkout@v4
         with:
           repository: mtararujs/python-greetings
           path: python-greetings
 
-      - name: Check Python version
-        shell: cmd
-        run: python --version
-
       - name: Install dependencies
-        shell: cmd
         run: pip install -r requirements.txt
         working-directory: python-greetings
 
@@ -32,8 +26,8 @@ jobs:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy
+      - name: Deploy to dev
+        uses: ./.github/actions/deploy-action
         with:
           env_name: dev
           port: 7001
@@ -42,8 +36,8 @@ jobs:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Dev
-        uses: ./.github/actions/test
+      - name: Run tests on dev
+        uses: ./.github/actions/test-action
         with:
           env_name: dev
 
@@ -51,8 +45,8 @@ jobs:
     needs: tests-on-dev
     runs-on: self-hosted
     steps:
-      - name: Deploy to Staging
-        uses: ./.github/actions/deploy
+      - name: Deploy to staging
+        uses: ./.github/actions/deploy-action
         with:
           env_name: staging
           port: 7002
@@ -61,8 +55,8 @@ jobs:
     needs: deploy-to-staging
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Staging
-        uses: ./.github/actions/test
+      - name: Run tests on staging
+        uses: ./.github/actions/test-action
         with:
           env_name: staging
 
@@ -70,8 +64,8 @@ jobs:
     needs: tests-on-staging
     runs-on: self-hosted
     steps:
-      - name: Deploy to Preprod
-        uses: ./.github/actions/deploy
+      - name: Deploy to preprod
+        uses: ./.github/actions/deploy-action
         with:
           env_name: preprod
           port: 7003
@@ -80,8 +74,8 @@ jobs:
     needs: deploy-to-preprod
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Preprod
-        uses: ./.github/actions/test
+      - name: Run tests on preprod
+        uses: ./.github/actions/test-action
         with:
           env_name: preprod
 
@@ -89,8 +83,8 @@ jobs:
     needs: tests-on-preprod
     runs-on: self-hosted
     steps:
-      - name: Deploy to Prod
-        uses: ./.github/actions/deploy
+      - name: Deploy to prod
+        uses: ./.github/actions/deploy-action
         with:
           env_name: prod
           port: 7004
@@ -99,7 +93,7 @@ jobs:
     needs: deploy-to-prod
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Prod
-        uses: ./.github/actions/test
+      - name: Run tests on prod
+        uses: ./.github/actions/test-action
         with:
           env_name: prod
