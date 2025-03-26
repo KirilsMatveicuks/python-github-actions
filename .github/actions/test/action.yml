@@ -1,8 +1,9 @@
 name: Run Tests
-description: Runs API tests for the service
+description: Runs API tests using course-js-api-framework
 
 inputs:
   environment:
+    description: "Test environment (dev, staging, preprod, prod)"
     required: true
 
 runs:
@@ -11,7 +12,7 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Clone test repository
+    - name: Clone test framework repository
       uses: actions/checkout@v4
       with:
         repository: mtararujs/course-js-api-framework
@@ -19,10 +20,10 @@ runs:
 
     - name: Install dependencies
       run: npm install
-      shell: cmd
+      shell: bash
       working-directory: course-js-api-framework
 
     - name: Run tests
       run: npm run greetings greetings_${{ inputs.environment }}
-      shell: cmd
+      shell: bash
       working-directory: course-js-api-framework

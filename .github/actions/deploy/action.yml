@@ -1,9 +1,12 @@
-name: Deploy Service
-description: Deploys the Python Greetings service
+name: Deploy Application
+description: Deploys the Python service using PM2
+
 inputs:
   environment:
+    description: "Deployment environment (dev, staging, preprod, prod)"
     required: true
   port:
+    description: "Port number"
     required: true
 
 runs:
@@ -19,11 +22,11 @@ runs:
         path: python-greetings
 
     - name: Stop existing service
-      run: pm2 delete greetings-app-${{ inputs.environment }} || exit /b 0
-      shell: cmd
+      run: pm2 delete greetings-app-${{ inputs.environment }} & EXIT /B 0
+      shell: bash
       working-directory: python-greetings
 
-    - name: Start new service
+    - name: Start service
       run: pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
-      shell: cmd
+      shell: bash
       working-directory: python-greetings
