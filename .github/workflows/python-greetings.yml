@@ -19,9 +19,15 @@ jobs:
           repository: mtararujs/python-greetings
           path: python-greetings
 
+      - name: Check Python version
+        run: python3 --version
+        shell: bash
+
       - name: Install dependencies
         run: pip3 install -r requirements.txt
+        shell: bash
         working-directory: python-greetings
+
 
   deploy-to-dev:
     needs: install-pip-deps
