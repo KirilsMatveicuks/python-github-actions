@@ -17,33 +17,12 @@ runs:
         repository: mtararujs/course-js-api-framework
         path: course-js-api-framework
 
-    - name: Show current directory
-      run: pwd
-      shell: bash
-
-    - name: List directory contents
-      run: ls -la
-      shell: bash
-
-    - name: Show Node.js and npm versions
-      run: |
-        node --version
-        npm --version
-      shell: bash
-
     - name: Install dependencies
       run: npm install
-      shell: bash
+      shell: cmd
       working-directory: course-js-api-framework
 
-    - name: List available npm scripts
-      run: npm run
-      shell: bash
-      working-directory: course-js-api-framework
-
-    - name: Detailed test run
-      run: |
-        echo "Running tests for ${{ inputs.environment }}"
-        npm run greetings greetings_${{ inputs.environment }} || (echo "Test run failed" && exit 1)
-      shell: bash
+    - name: Run tests
+      run: npm run greetings greetings_${{ inputs.environment }}
+      shell: cmd
       working-directory: course-js-api-framework
