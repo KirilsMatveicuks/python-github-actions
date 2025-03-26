@@ -1,7 +1,10 @@
-name: Python Delivery Pipeline
+name: Python Greetings Pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -11,39 +14,63 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Clone python-greetings repository
+      - name: Clone python-greetings repo
         uses: actions/checkout@v4
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
-        shell: cmd
+        run: pip install -r requirements.txt
         working-directory: python-greetings
 
   deploy-to-dev:
     needs: install-pip-deps
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4  
-
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy
-        with:
-          environment: dev
-          port: 7001
+    uses: ./.github/actions/deploy
+    with:
+      environment: dev
+      port: 7001
 
   tests-on-dev:
     needs: deploy-to-dev
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    uses: ./.github/actions/test
+    with:
+      environment: dev
 
-      - name: Run tests on Dev
-        uses: ./.github/actions/test
-        with:
-          environment: dev
+  deploy-to-staging:
+    needs: tests-on-dev
+    uses: ./.github/actions/deploy
+    with:
+      environment: staging
+      port: 7002
+
+  tests-on-staging:
+    needs: deploy-to-staging
+    uses: ./.github/actions/test
+    with:
+      environment: staging
+
+  deploy-to-preprod:
+    needs: tests-on-staging
+    uses: ./.github/actions/deploy
+    with:
+      environment: preprod
+      port: 7003
+
+  tests-on-preprod:
+    needs: deploy-to-preprod
+    uses: ./.github/actions/test
+    with:
+      environment: preprod
+
+  deploy-to-prod:
+    needs: tests-on-preprod
+    uses: ./.github/actions/deploy
+    with:
+      environment: prod
+      port: 7004
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    uses: ./.github/actions/test
+    with:
+      environment: prod
