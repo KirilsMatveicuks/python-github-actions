@@ -1,29 +1,208 @@
-name: Run Tests
-description: Runs API tests using course-js-api-framework
+name: Python Delivery Pipeline
 
-inputs:
-  environment:
-    description: "Test environment (dev, staging, preprod, prod)"
-    required: true
+on:
+  push:
+    branches:
+      - main
 
-runs:
-  using: "composite"
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+jobs:
+  install-pip-deps:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Clone test framework repository
-      uses: actions/checkout@v4
-      with:
-        repository: mtararujs/course-js-api-framework
-        path: course-js-api-framework
+      - name: Clone python-greetings repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
 
-    - name: Install dependencies
-      run: npm install
-      shell: bash
-      working-directory: course-js-api-framework
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+        shell: cmd
+        working-directory: python-greetings
 
-    - name: Run tests
-      run: npm run greetings greetings_${{ inputs.environment }}
-      shell: bash
-      working-directory: course-js-api-framework
+  deploy-to-dev:
+    needs: install-pip-deps
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone python-greetings repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing service
+        run: pm2 delete greetings-app-dev || exit /b 0
+        shell: cmd
+        working-directory: python-greetings
+
+      - name: Start new service
+        run: pm2 start app.py --name greetings-app-dev -- --port 7001
+        shell: cmd
+        working-directory: python-greetings
+
+  tests-on-dev:
+    needs: deploy-to-dev
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone test repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-js-api-framework
+
+      - name: Install dependencies
+        run: npm install
+        shell: cmd
+        working-directory: course-js-api-framework
+
+      - name: Run tests
+        run: npm run greetings greetings_dev
+        shell: cmd
+        working-directory: course-js-api-framework
+
+  deploy-to-staging:
+    needs: tests-on-dev
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone python-greetings repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing service
+        run: pm2 delete greetings-app-staging || exit /b 0
+        shell: cmd
+        working-directory: python-greetings
+
+      - name: Start new service
+        run: pm2 start app.py --name greetings-app-staging -- --port 7002
+        shell: cmd
+        working-directory: python-greetings
+
+  tests-on-staging:
+    needs: deploy-to-staging
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone test repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-js-api-framework
+
+      - name: Install dependencies
+        run: npm install
+        shell: cmd
+        working-directory: course-js-api-framework
+
+      - name: Run tests
+        run: npm run greetings greetings_staging
+        shell: cmd
+        working-directory: course-js-api-framework
+
+  deploy-to-preprod:
+    needs: tests-on-staging
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone python-greetings repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing service
+        run: pm2 delete greetings-app-preprod || exit /b 0
+        shell: cmd
+        working-directory: python-greetings
+
+      - name: Start new service
+        run: pm2 start app.py --name greetings-app-preprod -- --port 7003
+        shell: cmd
+        working-directory: python-greetings
+
+  tests-on-preprod:
+    needs: deploy-to-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone test repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-js-api-framework
+
+      - name: Install dependencies
+        run: npm install
+        shell: cmd
+        working-directory: course-js-api-framework
+
+      - name: Run tests
+        run: npm run greetings greetings_preprod
+        shell: cmd
+        working-directory: course-js-api-framework
+
+  deploy-to-prod:
+    needs: tests-on-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone python-greetings repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Stop existing service
+        run: pm2 delete greetings-app-prod || exit /b 0
+        shell: cmd
+        working-directory: python-greetings
+
+      - name: Start new service
+        run: pm2 start app.py --name greetings-app-prod -- --port 7004
+        shell: cmd
+        working-directory: python-greetings
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone test repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-js-api-framework
+
+      - name: Install dependencies
+        run: npm install
+        shell: cmd
+        working-directory: course-js-api-framework
+
+      - name: Run tests
+        run: npm run greetings greetings_prod
+        shell: cmd
+        working-directory: course-js-api-framework
