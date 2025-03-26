@@ -27,8 +27,11 @@ jobs:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  # ОБЯЗАТЕЛЬНО ДОБАВЛЯЕМ!
+
       - name: Deploy to Dev
-        uses: ./.github/actions/deploy@v1
+        uses: ./.github/actions/deploy  # УДАЛИЛ @v1
         with:
           environment: dev
           port: 7001
@@ -37,64 +40,10 @@ jobs:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Run tests on Dev
-        uses: ./.github/actions/test@v1
+        uses: ./.github/actions/test
         with:
           environment: dev
-
-  deploy-to-staging:
-    needs: tests-on-dev
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to Staging
-        uses: ./.github/actions/deploy@v1
-        with:
-          environment: staging
-          port: 7002
-
-  tests-on-staging:
-    needs: deploy-to-staging
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on Staging
-        uses: ./.github/actions/test@v1
-        with:
-          environment: staging
-
-  deploy-to-preprod:
-    needs: tests-on-staging
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to Preprod
-        uses: ./.github/actions/deploy@v1
-        with:
-          environment: preprod
-          port: 7003
-
-  tests-on-preprod:
-    needs: deploy-to-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on Preprod
-        uses: ./.github/actions/test@v1
-        with:
-          environment: preprod
-
-  deploy-to-prod:
-    needs: tests-on-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Deploy to Prod
-        uses: ./.github/actions/deploy@v1
-        with:
-          environment: prod
-          port: 7004
-
-  tests-on-prod:
-    needs: deploy-to-prod
-    runs-on: self-hosted
-    steps:
-      - name: Run tests on Prod
-        uses: ./.github/actions/test@v1
-        with:
-          environment: prod
