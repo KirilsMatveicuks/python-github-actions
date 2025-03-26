@@ -1,5 +1,5 @@
-name: Deploy to Environment
-description: "Deploy application to specific environment"
+name: "Deploy to Environment"
+description: "Deploy application to a specific environment"
 inputs:
   env_name:
     required: true

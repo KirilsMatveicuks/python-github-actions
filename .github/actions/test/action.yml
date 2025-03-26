@@ -1,5 +1,5 @@
-name: Run Tests
-description: "Run tests for specific environment"
+name: "Run Tests"
+description: "Run tests for a specific environment"
 inputs:
   env_name:
     required: true
