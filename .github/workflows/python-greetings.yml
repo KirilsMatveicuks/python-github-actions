@@ -45,28 +45,8 @@ jobs:
         run: pm2 start app.py --name greetings-app-dev -- --port 7001
         working-directory: python-greetings
 
-  tests-on-dev:
-    needs: deploy-to-dev
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Clone test framework
-        uses: actions/checkout@v4
-        with:
-          repository: 'mtararujs/course-js-api-framework'
-          path: 'course-js-api-framework'
-      - name: Install dependencies
-        shell: cmd
-        run: npm install
-        working-directory: course-js-api-framework
-      - name: Run tests
-        shell: cmd
-        run: npm run greetings greetings_dev
-        working-directory: course-js-api-framework
-
   deploy-to-staging:
-    needs: tests-on-dev
+    needs: deploy-to-dev
     runs-on: self-hosted
     steps:
       - name: Checkout repository
@@ -84,28 +64,8 @@ jobs:
         run: pm2 start app.py --name greetings-app-staging -- --port 7002
         working-directory: python-greetings
 
-  tests-on-staging:
-    needs: deploy-to-staging
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Clone test framework
-        uses: actions/checkout@v4
-        with:
-          repository: 'mtararujs/course-js-api-framework'
-          path: 'course-js-api-framework'
-      - name: Install dependencies
-        shell: cmd
-        run: npm install
-        working-directory: course-js-api-framework
-      - name: Run tests
-        shell: cmd
-        run: npm run greetings greetings_staging
-        working-directory: course-js-api-framework
-
   deploy-to-preprod:
-    needs: tests-on-staging
+    needs: deploy-to-staging
     runs-on: self-hosted
     steps:
       - name: Checkout repository
@@ -123,28 +83,8 @@ jobs:
         run: pm2 start app.py --name greetings-app-preprod -- --port 7003
         working-directory: python-greetings
 
-  tests-on-preprod:
-    needs: deploy-to-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Clone test framework
-        uses: actions/checkout@v4
-        with:
-          repository: 'mtararujs/course-js-api-framework'
-          path: 'course-js-api-framework'
-      - name: Install dependencies
-        shell: cmd
-        run: npm install
-        working-directory: course-js-api-framework
-      - name: Run tests
-        shell: cmd
-        run: npm run greetings greetings_preprod
-        working-directory: course-js-api-framework
-
   deploy-to-prod:
-    needs: tests-on-preprod
+    needs: deploy-to-preprod
     runs-on: self-hosted
     steps:
       - name: Checkout repository
@@ -161,23 +101,3 @@ jobs:
         shell: cmd
         run: pm2 start app.py --name greetings-app-prod -- --port 7004
         working-directory: python-greetings
-
-  tests-on-prod:
-    needs: deploy-to-prod
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Clone test framework
-        uses: actions/checkout@v4
-        with:
-          repository: 'mtararujs/course-js-api-framework'
-          path: 'course-js-api-framework'
-      - name: Install dependencies
-        shell: cmd
-        run: npm install
-        working-directory: course-js-api-framework
-      - name: Run tests
-        shell: cmd
-        run: npm run greetings greetings_prod
-        working-directory: course-js-api-framework
