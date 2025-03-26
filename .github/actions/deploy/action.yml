@@ -1,14 +1,17 @@
-name: Deploy Service
-description: Deploy Python microservice using PM2
+name: Deploy to Environment
+description: "Deploy application to specific environment"
 inputs:
-  environment:
+  env_name:
     required: true
+    description: "Environment name (dev, staging, preprod, prod)"
   port:
     required: true
+    description: "Port number"
+
 runs:
   using: "composite"
   steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Clone python-greetings repository
@@ -17,13 +20,11 @@ runs:
         repository: mtararujs/python-greetings
         path: python-greetings
 
-    - name: Stop previous service
-      run: |
-        pm2 delete greetings-app-${{ inputs.environment }} || true
+    - name: Stop existing service
+      run: pm2 delete greetings-app-${{ inputs.env_name }} || true
       shell: bash
 
-    - name: Start new service
-      run: |
-        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
+    - name: Start application
+      run: pm2 start app.py --name greetings-app-${{ inputs.env_name }} -- --port ${{ inputs.port }}
       shell: bash
       working-directory: python-greetings

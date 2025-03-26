@@ -1,26 +1,28 @@
 name: Run Tests
-description: Run API tests using course-js-api-framework
+description: "Run tests for specific environment"
 inputs:
-  environment:
+  env_name:
     required: true
+    description: "Environment name (dev, staging, preprod, prod)"
+
 runs:
   using: "composite"
   steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Clone test framework repository
+    - name: Clone test repository
       uses: actions/checkout@v4
       with:
         repository: mtararujs/course-js-api-framework
-        path: test-framework
+        path: course-js-api-framework
 
     - name: Install dependencies
       run: npm install
       shell: bash
-      working-directory: test-framework
+      working-directory: course-js-api-framework
 
     - name: Run tests
-      run: npm run greetings greetings_${{ inputs.environment }}
+      run: npm run greetings greetings_${{ inputs.env_name }}
       shell: bash
-      working-directory: test-framework
+      working-directory: course-js-api-framework
