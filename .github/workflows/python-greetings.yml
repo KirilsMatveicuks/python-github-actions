@@ -20,11 +20,11 @@ jobs:
           path: python-greetings
 
       - name: Check Python version
-        shell: pwsh
+        shell: powershell
         run: python --version
 
       - name: Install dependencies
-        shell: pwsh
+        shell: powershell
         run: pip install -r requirements.txt
         working-directory: python-greetings
 
