@@ -7,7 +7,14 @@ on:
 
 jobs:
   install-pip-deps:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Используем локальный агент
     steps:
-      - name: Checkout repo
+      - name: Checkout repository  # Скачиваем код из репозитория
         uses: actions/checkout@v4
+
+      - name: Clone python-greetings  # Клонируем код Python-сервиса
+        run: git clone https://github.com/mtararujs/python-greetings python-greetings
+
+      - name: Install dependencies  # Устанавливаем зависимости
+        run: pip install -r python-greetings/requirements.txt
+
