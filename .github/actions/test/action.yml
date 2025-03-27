@@ -25,3 +25,4 @@ runs:
         echo Running tests on ${{ inputs.environment }} Environment...
         npm install
         npm run greetings greetings_${{ inputs.environment }}
+      //test
