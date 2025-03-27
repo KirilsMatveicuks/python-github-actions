@@ -1,0 +1,20 @@
+name: Deploy Service
+description: Deploys the application using PowerShell
+inputs:
+  env-name:
+    required: true
+    description: "Environment name (dev, staging, preprod, prod)"
+  port:
+    required: true
+    description: "Port number"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Stop existing service
+      run: Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
+      shell: pwsh
+
+    - name: Start service
+      run: Start-Process -NoNewWindow -FilePath "python" -ArgumentList "app.py --port ${{ inputs.port }}"
+      shell: pwsh

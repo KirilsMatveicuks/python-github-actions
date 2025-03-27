@@ -1,0 +1,16 @@
+name: Install Dependencies
+description: Installs Python dependencies
+inputs:
+  working-directory:
+    required: true
+    description: "Working directory"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dependencies
+      run: |
+        Set-Location -Path "${{ inputs.working-directory }}"
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      shell: pwsh
