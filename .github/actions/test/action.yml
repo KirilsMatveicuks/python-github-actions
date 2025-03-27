@@ -1,0 +1,27 @@
+name: "Run Tests"
+description: "Runs tests against a specified environment"
+
+inputs:
+  env_name:
+    description: "Target environment (dev, staging, preprod, prod)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Test Framework Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/course-js-api-framework
+        path: test-framework
+
+    - name: Run Tests
+      shell: cmd
+      working-directory: test-framework
+      run: |
+        echo Running tests on ${{ inputs.env_name }} Environment...
+        npm install
+        npm run greetings greetings_${{ inputs.env_name }}

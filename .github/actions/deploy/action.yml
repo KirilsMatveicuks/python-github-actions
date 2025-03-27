@@ -1,0 +1,30 @@
+name: "Deploy Python Greetings"
+description: "Deploys the Python Greetings microservice"
+
+inputs:
+  env_name:
+    description: "Target environment (dev, staging, preprod, prod)"
+    required: true
+  port:
+    description: "Port for the environment"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Python Greetings Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Deploy to Environment
+      shell: cmd
+      working-directory: python-greetings
+      run: |
+        echo Deploying to ${{ inputs.env_name }} Environment...
+        pm2 delete greetings-app-${{ inputs.env_name }} || exit /b 0
+        pm2 start app.py --name greetings-app-${{ inputs.env_name }} -- --port ${{ inputs.port }}
