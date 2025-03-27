@@ -14,75 +14,77 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Clone python-greetings repository
-        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
+          python-version: '3.x'
+      - name: Check Python Version
+        run: python --version
+        shell: cmd
       - name: Install dependencies
-        run: pip3 install -r requirements.txt
-        shell: bash
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+        shell: cmd
 
   deploy-to-dev:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
       - name: Deploy to Dev
-        run: echo "Deploying to dev on port 7001"
-        shell: bash
+        run: echo Deploying to dev on port 7001
+        shell: cmd
 
   tests-on-dev:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
       - name: Run tests on Dev
-        run: echo "Running tests on dev"
-        shell: bash
+        run: echo Running tests on dev
+        shell: cmd
 
   deploy-to-staging:
     needs: tests-on-dev
     runs-on: self-hosted
     steps:
       - name: Deploy to Staging
-        run: echo "Deploying to staging on port 7002"
-        shell: bash
+        run: echo Deploying to staging on port 7002
+        shell: cmd
 
   tests-on-staging:
     needs: deploy-to-staging
     runs-on: self-hosted
     steps:
       - name: Run tests on Staging
-        run: echo "Running tests on staging"
-        shell: bash
+        run: echo Running tests on staging
+        shell: cmd
 
   deploy-to-preprod:
     needs: tests-on-staging
     runs-on: self-hosted
     steps:
       - name: Deploy to Preprod
-        run: echo "Deploying to preprod on port 7003"
-        shell: bash
+        run: echo Deploying to preprod on port 7003
+        shell: cmd
 
   tests-on-preprod:
     needs: deploy-to-preprod
     runs-on: self-hosted
     steps:
       - name: Run tests on Preprod
-        run: echo "Running tests on preprod"
-        shell: bash
+        run: echo Running tests on preprod
+        shell: cmd
 
   deploy-to-prod:
     needs: tests-on-preprod
     runs-on: self-hosted
     steps:
       - name: Deploy to Prod
-        run: echo "Deploying to prod on port 7004"
-        shell: bash
+        run: echo Deploying to prod on port 7004
+        shell: cmd
 
   tests-on-prod:
     needs: deploy-to-prod
     runs-on: self-hosted
     steps:
       - name: Run tests on Prod
-        run: echo "Running tests on prod"
-        shell: bash
+        run: echo Running tests on prod
+        shell: cmd
