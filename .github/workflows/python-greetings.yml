@@ -1,10 +1,7 @@
-name: Python Greetings CI/CD
+name: Python Greetings CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -12,62 +9,67 @@ jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
-      - name: Checkout pipeline repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Clone application repository
+      
+      - name: Checkout python-greetings repository
         uses: actions/checkout@v4
         with:
           repository: mtararujs/python-greetings
           path: python-greetings
-
+      
       - name: Install dependencies
-        uses: ./.github/actions/install-deps
-        with:
-          working-directory: python-greetings
+        run: pip3 install -r requirements.txt
+        working-directory: python-greetings
 
-  deploy:
+  deploy-to-dev:
     needs: install-pip-deps
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        env: [dev, staging, preprod, prod]
-        port: [7001, 7002, 7003, 7004]
-    steps:
-      - name: Checkout pipeline repository
-        uses: actions/checkout@v4
+    uses: ./.github/actions/deploy
+    with:
+      environment: dev
+      port: 7001
 
-      - name: Clone application repository
-        uses: actions/checkout@v4
-        with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
+  tests-on-dev:
+    needs: deploy-to-dev
+    uses: ./.github/actions/test
+    with:
+      environment: dev
 
-      - name: Deploy service
-        uses: ./.github/actions/deploy-service
-        with:
-          env: ${{ matrix.env }}
-          port: ${{ matrix.port }}
-          working-directory: python-greetings
+  deploy-to-staging:
+    needs: tests-on-dev
+    uses: ./.github/actions/deploy
+    with:
+      environment: staging
+      port: 7002
 
-  test:
-    needs: deploy
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        env: [dev, staging, preprod, prod]
-    steps:
-      - name: Checkout pipeline repository
-        uses: actions/checkout@v4
+  tests-on-staging:
+    needs: deploy-to-staging
+    uses: ./.github/actions/test
+    with:
+      environment: staging
 
-      - name: Clone test framework repository
-        uses: actions/checkout@v4
-        with:
-          repository: mtararujs/course-js-api-framework
-          path: course-js-api-framework
+  deploy-to-preprod:
+    needs: tests-on-staging
+    uses: ./.github/actions/deploy
+    with:
+      environment: preprod
+      port: 7003
 
-      - name: Run tests
-        uses: ./.github/actions/run-tests
-        with:
-          env: ${{ matrix.env }}
-          working-directory: course-js-api-framework
+  tests-on-preprod:
+    needs: deploy-to-preprod
+    uses: ./.github/actions/test
+    with:
+      environment: preprod
+
+  deploy-to-prod:
+    needs: tests-on-preprod
+    uses: ./.github/actions/deploy
+    with:
+      environment: prod
+      port: 7004
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    uses: ./.github/actions/test
+    with:
+      environment: prod
