@@ -6,186 +6,81 @@ jobs:
   install-pip-deps:
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
-        with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
       - name: Install Python Dependencies
-        working-directory: python-greetings
-        shell: cmd
-        run: |
-          echo Installing all required dependencies...
-          pip install -r requirements.txt
+        uses: ./.github/actions/install-python-deps
 
   deploy-to-dev:
     needs: [install-pip-deps]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
+      - name: Deploy to Dev
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
-      - name: Deploy to Dev Environment
-        working-directory: python-greetings
-        shell: cmd
-        run: |
-          echo Deploying to Dev Environment...
-          pm2 delete greetings-app-dev || exit /b 0
-          pm2 start app.py --name greetings-app-dev -- --port 7001
+          env_name: "dev"
+          port: "7001"
 
   tests-on-dev:
     needs: [deploy-to-dev]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Test Framework Repository
-        uses: actions/checkout@v4
+      - name: Run Tests on Dev
+        uses: ./.github/actions/test
         with:
-          repository: mtararujs/course-js-api-framework
-          path: test-framework
-
-      - name: Run Dev Environment Tests
-        working-directory: test-framework
-        shell: cmd
-        run: |
-          echo Running tests on Dev Environment...
-          npm install
-          npm run greetings greetings_dev
+          env_name: "dev"
 
   deploy-to-staging:
     needs: [tests-on-dev]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
+      - name: Deploy to Staging
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
-      - name: Deploy to Staging Environment
-        working-directory: python-greetings
-        shell: cmd
-        run: |
-          echo Deploying to Staging Environment...
-          pm2 delete greetings-app-staging || exit /b 0
-          pm2 start app.py --name greetings-app-staging -- --port 7002
+          env_name: "staging"
+          port: "7002"
 
   tests-on-staging:
     needs: [deploy-to-staging]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Test Framework Repository
-        uses: actions/checkout@v4
+      - name: Run Tests on Staging
+        uses: ./.github/actions/test
         with:
-          repository: mtararujs/course-js-api-framework
-          path: test-framework
-
-      - name: Run Staging Environment Tests
-        working-directory: test-framework
-        shell: cmd
-        run: |
-          echo Running tests on Staging Environment...
-          npm install
-          npm run greetings greetings_staging
+          env_name: "staging"
 
   deploy-to-preprod:
     needs: [tests-on-staging]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
+      - name: Deploy to PreProd
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
-      - name: Deploy to PreProd Environment
-        working-directory: python-greetings
-        shell: cmd
-        run: |
-          echo Deploying to PreProd Environment...
-          pm2 delete greetings-app-preprod || exit /b 0
-          pm2 start app.py --name greetings-app-preprod -- --port 7003
+          env_name: "preprod"
+          port: "7003"
 
   tests-on-preprod:
     needs: [deploy-to-preprod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Test Framework Repository
-        uses: actions/checkout@v4
+      - name: Run Tests on PreProd
+        uses: ./.github/actions/test
         with:
-          repository: mtararujs/course-js-api-framework
-          path: test-framework
-
-      - name: Run PreProd Environment Tests
-        working-directory: test-framework
-        shell: cmd
-        run: |
-          echo Running tests on PreProd Environment...
-          npm install
-          npm run greetings greetings_preprod
+          env_name: "preprod"
 
   deploy-to-prod:
     needs: [tests-on-preprod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
+      - name: Deploy to Prod
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
-      - name: Deploy to Prod Environment
-        working-directory: python-greetings
-        shell: cmd
-        run: |
-          echo Deploying to Prod Environment...
-          pm2 delete greetings-app-prod || exit /b 0
-          pm2 start app.py --name greetings-app-prod -- --port 7004
+          env_name: "prod"
+          port: "7004"
 
   tests-on-prod:
     needs: [deploy-to-prod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Pipeline Repository
-        uses: actions/checkout@v4
-
-      - name: Clone Test Framework Repository
-        uses: actions/checkout@v4
+      - name: Run Tests on Prod
+        uses: ./.github/actions/test
         with:
-          repository: mtararujs/course-js-api-framework
-          path: test-framework
-
-      - name: Run Prod Environment Tests
-        working-directory: test-framework
-        shell: cmd
-        run: |
-          echo Running tests on Prod Environment...
-          npm install
-          npm run greetings greetings_prod
+          env_name: "prod"
