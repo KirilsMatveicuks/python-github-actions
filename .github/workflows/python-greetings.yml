@@ -1,7 +1,10 @@
-name: Python Greetings CI/CD Pipeline
+name: Python Greetings Pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -11,18 +14,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Checkout python-greetings repository
+      
+      - name: Clone python-greetings repo
         uses: actions/checkout@v4
         with:
-          repository: mtararujs/python-greetings
-          ref: main
-          path: python-greetings
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        working-directory: python-greetings
         shell: cmd
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        working-directory: python-greetings
 
   deploy-to-dev:
     needs: install-pip-deps
@@ -30,120 +34,100 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Clone python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
 
-      - name: Stop existing app (if running)
+      - name: Stop existing service
+        shell: cmd
         run: |
           pm2 delete greetings-app-dev || echo "No process found"
           exit 0
+
+      - name: Start new service
         shell: cmd
+        run: |
+          pm2 start app.py --name greetings-app-dev -- --port 7001
+          pm2 save
+        working-directory: python-greetings
 
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy
-        with:
-          environment: dev
-          port: 7001
-
-  tests-on-dev:
+  deploy-to-staging:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Run Tests on Dev
-        uses: ./.github/actions/test
-        with:
-          environment: dev
-
-  deploy-to-staging:
-    needs: tests-on-dev
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
+      
+      - name: Clone python-greetings repo
         uses: actions/checkout@v4
+        with:
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
 
-      - name: Stop existing app (if running)
+      - name: Stop existing service
+        shell: cmd
         run: |
           pm2 delete greetings-app-staging || echo "No process found"
           exit 0
+
+      - name: Start new service
         shell: cmd
+        run: |
+          pm2 start app.py --name greetings-app-staging -- --port 7002
+          pm2 save
+        working-directory: python-greetings
 
-      - name: Deploy to Staging
-        uses: ./.github/actions/deploy
-        with:
-          environment: staging
-          port: 7002
-
-  tests-on-staging:
+  deploy-to-preprod:
     needs: deploy-to-staging
     runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Run Tests on Staging
-        uses: ./.github/actions/test
-        with:
-          environment: staging
-
-  deploy-to-preprod:
-    needs: tests-on-staging
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
+      
+      - name: Clone python-greetings repo
         uses: actions/checkout@v4
+        with:
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
 
-      - name: Stop existing app (if running)
+      - name: Stop existing service
+        shell: cmd
         run: |
           pm2 delete greetings-app-preprod || echo "No process found"
           exit 0
+
+      - name: Start new service
         shell: cmd
+        run: |
+          pm2 start app.py --name greetings-app-preprod -- --port 7003
+          pm2 save
+        working-directory: python-greetings
 
-      - name: Deploy to Preprod
-        uses: ./.github/actions/deploy
-        with:
-          environment: preprod
-          port: 7003
-
-  tests-on-preprod:
+  deploy-to-prod:
     needs: deploy-to-preprod
     runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Run Tests on Preprod
-        uses: ./.github/actions/test
-        with:
-          environment: preprod
-
-  deploy-to-prod:
-    needs: tests-on-preprod
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
+      
+      - name: Clone python-greetings repo
         uses: actions/checkout@v4
+        with:
+          repository: 'mtararujs/python-greetings'
+          path: 'python-greetings'
 
-      - name: Stop existing app (if running)
+      - name: Stop existing service
+        shell: cmd
         run: |
           pm2 delete greetings-app-prod || echo "No process found"
           exit 0
+
+      - name: Start new service
         shell: cmd
-
-      - name: Deploy to Prod
-        uses: ./.github/actions/deploy
-        with:
-          environment: prod
-          port: 7004
-
-  tests-on-prod:
-    needs: deploy-to-prod
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Tests on Prod
-        uses: ./.github/actions/test
-        with:
-          environment: prod
+        run: |
+          pm2 start app.py --name greetings-app-prod -- --port 7004
+          pm2 save
+        working-directory: python-greetings
