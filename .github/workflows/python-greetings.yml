@@ -11,14 +11,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Checkout python-greetings repository
         uses: actions/checkout@v4
         with:
           repository: mtararujs/python-greetings
           ref: main
           path: python-greetings
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
         working-directory: python-greetings
@@ -34,6 +34,7 @@ jobs:
       - name: Stop existing app (if running)
         run: |
           pm2 delete greetings-app-dev || echo "No process found"
+          exit 0
         shell: cmd
 
       - name: Deploy to Dev
@@ -64,6 +65,7 @@ jobs:
       - name: Stop existing app (if running)
         run: |
           pm2 delete greetings-app-staging || echo "No process found"
+          exit 0
         shell: cmd
 
       - name: Deploy to Staging
@@ -94,6 +96,7 @@ jobs:
       - name: Stop existing app (if running)
         run: |
           pm2 delete greetings-app-preprod || echo "No process found"
+          exit 0
         shell: cmd
 
       - name: Deploy to Preprod
@@ -124,6 +127,7 @@ jobs:
       - name: Stop existing app (if running)
         run: |
           pm2 delete greetings-app-prod || echo "No process found"
+          exit 0
         shell: cmd
 
       - name: Deploy to Prod
