@@ -20,57 +20,56 @@ jobs:
           repository: mtararujs/python-greetings
           path: python-greetings
       - name: Install dependencies
-        run: pip3 install -r requirements.txt
-        working-directory: python-greetings
+        uses: ./github/actions/install/action.yml
 
   deploy-to-dev:
     needs: install-pip-deps
-    uses: ./.github/actions/deploy
+    uses: ./github/actions/deploy/action.yml
     with:
       environment: dev
       port: 7001
 
   tests-on-dev:
     needs: deploy-to-dev
-    uses: ./.github/actions/test
+    uses: ./github/actions/test/action.yml
     with:
       environment: dev
 
   deploy-to-staging:
     needs: tests-on-dev
-    uses: ./.github/actions/deploy
+    uses: ./github/actions/deploy/action.yml
     with:
       environment: staging
       port: 7002
 
   tests-on-staging:
     needs: deploy-to-staging
-    uses: ./.github/actions/test
+    uses: ./github/actions/test/action.yml
     with:
       environment: staging
 
   deploy-to-preprod:
     needs: tests-on-staging
-    uses: ./.github/actions/deploy
+    uses: ./github/actions/deploy/action.yml
     with:
       environment: preprod
       port: 7003
 
   tests-on-preprod:
     needs: deploy-to-preprod
-    uses: ./.github/actions/test
+    uses: ./github/actions/test/action.yml
     with:
       environment: preprod
 
   deploy-to-prod:
     needs: tests-on-preprod
-    uses: ./.github/actions/deploy
+    uses: ./github/actions/deploy/action.yml
     with:
       environment: prod
       port: 7004
 
   tests-on-prod:
     needs: deploy-to-prod
-    uses: ./.github/actions/test
+    uses: ./github/actions/test/action.yml
     with:
       environment: prod
