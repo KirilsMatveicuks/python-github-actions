@@ -1,0 +1,30 @@
+name: 'Deploy Application'
+description: 'Deploy Python Greetings application to specified environment'
+
+inputs:
+  environment:
+    description: 'Environment to deploy (dev/staging/preprod/prod)'
+    required: true
+  port:
+    description: 'Port number for the application'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout Pipeline Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Python Greetings Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Deploy to Environment
+      working-directory: python-greetings
+      shell: cmd
+      run: |
+        echo Deploying to ${{ inputs.environment }} Environment...
+        pm2 delete greetings-app-${{ inputs.environment }} || exit /b 0
+        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
