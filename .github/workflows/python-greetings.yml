@@ -31,6 +31,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Stop existing app (if running)
+        run: |
+          pm2 delete greetings-app-dev || echo "No process found"
+        shell: cmd
+
       - name: Deploy to Dev
         uses: ./.github/actions/deploy
         with:
@@ -55,6 +60,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Stop existing app (if running)
+        run: |
+          pm2 delete greetings-app-staging || echo "No process found"
+        shell: cmd
 
       - name: Deploy to Staging
         uses: ./.github/actions/deploy
@@ -81,6 +91,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Stop existing app (if running)
+        run: |
+          pm2 delete greetings-app-preprod || echo "No process found"
+        shell: cmd
+
       - name: Deploy to Preprod
         uses: ./.github/actions/deploy
         with:
@@ -105,6 +120,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Stop existing app (if running)
+        run: |
+          pm2 delete greetings-app-prod || echo "No process found"
+        shell: cmd
 
       - name: Deploy to Prod
         uses: ./.github/actions/deploy
