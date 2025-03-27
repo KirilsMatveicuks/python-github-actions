@@ -1,0 +1,22 @@
+# .github/actions/install-deps/action.yml
+name: 'Install Dependencies'
+description: 'Install Python Dependencies'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Pipeline Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Python Greetings Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Install Python Dependencies
+      working-directory: python-greetings
+      shell: cmd
+      run: |
+        echo Installing all required dependencies...
+        pip install -r requirements.txt

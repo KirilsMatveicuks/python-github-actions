@@ -1,0 +1,28 @@
+# .github/actions/test/action.yml
+name: 'Run Tests'
+description: 'Run Tests for Environment'
+
+inputs:
+  environment:
+    description: 'Target environment to test'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Pipeline Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Test Framework Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/course-js-api-framework
+        path: test-framework
+
+    - name: Run Environment Tests
+      working-directory: test-framework
+      shell: cmd
+      run: |
+        echo Running tests on ${{ inputs.environment }} Environment...
+        npm install
+        npm run greetings greetings_${{ inputs.environment }}
