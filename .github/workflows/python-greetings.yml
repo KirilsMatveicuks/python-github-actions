@@ -25,52 +25,76 @@ jobs:
 
   deploy-to-dev:
     needs: install-pip-deps
-    uses: ./.github/actions/deploy@main
-    with:
-      environment: dev
-      port: 7001
+    runs-on: self-hosted
+    steps:
+      - name: Run Deploy Action
+        uses: ./.github/actions/deploy
+        with:
+          environment: dev
+          port: 7001
 
   tests-on-dev:
     needs: deploy-to-dev
-    uses: ./.github/actions/test@main
-    with:
-      environment: dev
+    runs-on: self-hosted
+    steps:
+      - name: Run Test Action
+        uses: ./.github/actions/test
+        with:
+          environment: dev
 
   deploy-to-staging:
     needs: tests-on-dev
-    uses: ./.github/actions/deploy@main
-    with:
-      environment: staging
-      port: 7002
+    runs-on: self-hosted
+    steps:
+      - name: Run Deploy Action
+        uses: ./.github/actions/deploy
+        with:
+          environment: staging
+          port: 7002
 
   tests-on-staging:
     needs: deploy-to-staging
-    uses: ./.github/actions/test@main
-    with:
-      environment: staging
+    runs-on: self-hosted
+    steps:
+      - name: Run Test Action
+        uses: ./.github/actions/test
+        with:
+          environment: staging
 
   deploy-to-preprod:
     needs: tests-on-staging
-    uses: ./.github/actions/deploy@main
-    with:
-      environment: preprod
-      port: 7003
+    runs-on: self-hosted
+    steps:
+      - name: Run Deploy Action
+        uses: ./.github/actions/deploy
+        with:
+          environment: preprod
+          port: 7003
 
   tests-on-preprod:
     needs: deploy-to-preprod
-    uses: ./.github/actions/test@main
-    with:
-      environment: preprod
+    runs-on: self-hosted
+    steps:
+      - name: Run Test Action
+        uses: ./.github/actions/test
+        with:
+          environment: preprod
 
   deploy-to-prod:
     needs: tests-on-preprod
-    uses: ./.github/actions/deploy@main
-    with:
-      environment: prod
-      port: 7004
+    runs-on: self-hosted
+    steps:
+      - name: Run Deploy Action
+        uses: ./.github/actions/deploy
+        with:
+          environment: prod
+          port: 7004
 
   tests-on-prod:
     needs: deploy-to-prod
-    uses: ./.github/actions/test@main
-    with:
-      environment: prod
+    runs-on: self-hosted
+    steps:
+      - name: Run Test Action
+        uses: ./.github/actions/test
+        with:
+          environment: prod
