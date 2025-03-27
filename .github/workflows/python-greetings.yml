@@ -1,17 +1,10 @@
 # Файл: .github/workflows/python-greetings.yml
 name: Python Greetings Microservice Delivery Pipeline
 
-# Определение композитных действий
 on: [push]
 
-# Глобальные переменные сред
-env:
-  PYTHON_GREETINGS_REPO: https://github.com/mtararujs/python-greetings
-  TEST_FRAMEWORK_REPO: https://github.com/mtararujs/course-js-api-framework
-
 jobs:
-  # Композитные действия в .github/actions/
-  install-dependencies:
+  install-pip-deps:
     runs-on: [self-hosted]
     steps:
       - name: Checkout Pipeline Repository
@@ -30,7 +23,7 @@ jobs:
           pip3 install -r requirements.txt
 
   deploy-to-dev:
-    needs: [install-dependencies]
+    needs: [install-pip-deps]
     runs-on: [self-hosted]
     steps:
       - name: Checkout Pipeline Repository
