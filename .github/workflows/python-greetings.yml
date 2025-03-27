@@ -1,41 +1,73 @@
-name: Python Greetings CI/CD (Windows)
+name: Python Greetings CI/CD
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   install-pip-deps:
-    runs-on: windows-latest
+    runs-on: self-hosted
     steps:
-      - name: Checkout repository
+      - name: Checkout pipeline repository
         uses: actions/checkout@v4
 
-      - name: Clone python-greetings repo
-        run: git clone https://github.com/mtararujs/python-greetings python-greetings
-        shell: pwsh
+      - name: Clone application repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
 
       - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
+        uses: ./.github/actions/install-deps
         with:
           working-directory: python-greetings
 
-  deploy-to-dev:
+  deploy:
     needs: install-pip-deps
-    runs-on: windows-latest
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        env: [dev, staging, preprod, prod]
+        port: [7001, 7002, 7003, 7004]
     steps:
-      - name: Deploy to dev
+      - name: Checkout pipeline repository
+        uses: actions/checkout@v4
+
+      - name: Clone application repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Deploy service
         uses: ./.github/actions/deploy-service
         with:
-          env-name: dev
-          port: 7001
+          env: ${{ matrix.env }}
+          port: ${{ matrix.port }}
+          working-directory: python-greetings
 
-  tests-on-dev:
-    needs: deploy-to-dev
-    runs-on: windows-latest
+  test:
+    needs: deploy
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        env: [dev, staging, preprod, prod]
     steps:
-      - name: Run tests on dev
+      - name: Checkout pipeline repository
+        uses: actions/checkout@v4
+
+      - name: Clone test framework repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/course-js-api-framework
+          path: course-js-api-framework
+
+      - name: Run tests
         uses: ./.github/actions/run-tests
         with:
-          env-name: dev
+          env: ${{ matrix.env }}
+          working-directory: course-js-api-framework

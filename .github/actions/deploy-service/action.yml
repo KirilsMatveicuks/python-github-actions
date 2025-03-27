@@ -1,20 +1,23 @@
-name: Deploy Service
-description: Deploys the application using PowerShell
+name: "Deploy Service"
+description: "Deploys the Python service"
 inputs:
-  env-name:
+  env:
+    description: "Deployment environment"
     required: true
-    description: "Environment name (dev, staging, preprod, prod)"
   port:
+    description: "Port for the service"
     required: true
-    description: "Port number"
-
+  working-directory:
+    description: "Directory of the application"
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Stop existing service
-      run: Stop-Process -Name "python" -Force -ErrorAction SilentlyContinue
-      shell: pwsh
+      run: pm2 delete greetings-app-${{ inputs.env }} || echo Service not running
+      shell: cmd
 
-    - name: Start service
-      run: Start-Process -NoNewWindow -FilePath "python" -ArgumentList "app.py --port ${{ inputs.port }}"
-      shell: pwsh
+    - name: Start new service
+      run: pm2 start app.py --name greetings-app-${{ inputs.env }} -- --port ${{ inputs.port }}
+      shell: cmd
+      working-directory: ${{ inputs.working-directory }}
