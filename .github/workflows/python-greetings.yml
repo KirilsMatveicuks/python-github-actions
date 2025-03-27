@@ -1,4 +1,4 @@
-# .github/workflows/python-greetings.yml
+# Файл: .github/workflows/python-greetings.yml
 name: Python Greetings Microservice Delivery Pipeline
 
 on: [push]
@@ -7,10 +7,16 @@ jobs:
   install-pip-deps:
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Clone Python Greetings Repository
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Install Python Dependencies
         working-directory: python-greetings
         shell: cmd
         run: |
@@ -21,7 +27,7 @@ jobs:
     needs: [install-pip-deps]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Python Greetings Repository
@@ -42,7 +48,7 @@ jobs:
     needs: [deploy-to-dev]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Test Framework Repository
@@ -63,7 +69,7 @@ jobs:
     needs: [tests-on-dev]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Python Greetings Repository
@@ -84,7 +90,7 @@ jobs:
     needs: [deploy-to-staging]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Test Framework Repository
@@ -105,7 +111,7 @@ jobs:
     needs: [tests-on-staging]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Python Greetings Repository
@@ -126,7 +132,7 @@ jobs:
     needs: [deploy-to-preprod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Test Framework Repository
@@ -147,7 +153,7 @@ jobs:
     needs: [tests-on-preprod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Python Greetings Repository
@@ -168,7 +174,7 @@ jobs:
     needs: [deploy-to-prod]
     runs-on: [self-hosted]
     steps:
-      - name: Checkout Repository
+      - name: Checkout Pipeline Repository
         uses: actions/checkout@v4
 
       - name: Clone Test Framework Repository
