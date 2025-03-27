@@ -1,4 +1,3 @@
-# Файл: .github/workflows/python-greetings.yml
 name: Python Greetings Microservice Delivery Pipeline
 
 on: [push]
