@@ -1,0 +1,12 @@
+name: 'Run Tests'
+description: 'Runs tests for the given environment'
+inputs:
+  environment:
+    description: 'Testing environment'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Run tests
+      run: echo "Running tests on ${{ inputs.environment }}"
+      shell: bash
