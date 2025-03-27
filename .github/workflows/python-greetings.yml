@@ -20,56 +20,69 @@ jobs:
           repository: mtararujs/python-greetings
           path: python-greetings
       - name: Install dependencies
-        uses: ./github/actions/install/action.yml
+        run: pip3 install -r requirements.txt
+        shell: bash
 
   deploy-to-dev:
     needs: install-pip-deps
-    uses: ./github/actions/deploy/action.yml
-    with:
-      environment: dev
-      port: 7001
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Dev
+        run: echo "Deploying to dev on port 7001"
+        shell: bash
 
   tests-on-dev:
     needs: deploy-to-dev
-    uses: ./github/actions/test/action.yml
-    with:
-      environment: dev
+    runs-on: self-hosted
+    steps:
+      - name: Run tests on Dev
+        run: echo "Running tests on dev"
+        shell: bash
 
   deploy-to-staging:
     needs: tests-on-dev
-    uses: ./github/actions/deploy/action.yml
-    with:
-      environment: staging
-      port: 7002
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Staging
+        run: echo "Deploying to staging on port 7002"
+        shell: bash
 
   tests-on-staging:
     needs: deploy-to-staging
-    uses: ./github/actions/test/action.yml
-    with:
-      environment: staging
+    runs-on: self-hosted
+    steps:
+      - name: Run tests on Staging
+        run: echo "Running tests on staging"
+        shell: bash
 
   deploy-to-preprod:
     needs: tests-on-staging
-    uses: ./github/actions/deploy/action.yml
-    with:
-      environment: preprod
-      port: 7003
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Preprod
+        run: echo "Deploying to preprod on port 7003"
+        shell: bash
 
   tests-on-preprod:
     needs: deploy-to-preprod
-    uses: ./github/actions/test/action.yml
-    with:
-      environment: preprod
+    runs-on: self-hosted
+    steps:
+      - name: Run tests on Preprod
+        run: echo "Running tests on preprod"
+        shell: bash
 
   deploy-to-prod:
     needs: tests-on-preprod
-    uses: ./github/actions/deploy/action.yml
-    with:
-      environment: prod
-      port: 7004
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Prod
+        run: echo "Deploying to prod on port 7004"
+        shell: bash
 
   tests-on-prod:
     needs: deploy-to-prod
-    uses: ./github/actions/test/action.yml
-    with:
-      environment: prod
+    runs-on: self-hosted
+    steps:
+      - name: Run tests on Prod
+        run: echo "Running tests on prod"
+        shell: bash
