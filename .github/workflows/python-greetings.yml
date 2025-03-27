@@ -18,9 +18,10 @@ jobs:
 
       - name: Install Python Dependencies
         working-directory: python-greetings
+        shell: cmd
         run: |
-          echo "Installing all required dependencies..."
-          pip3 install -r requirements.txt
+          echo Installing all required dependencies...
+          pip install -r requirements.txt
 
   deploy-to-dev:
     needs: [install-pip-deps]
@@ -37,9 +38,10 @@ jobs:
 
       - name: Deploy to Dev Environment
         working-directory: python-greetings
+        shell: cmd
         run: |
-          echo "Deploying to Dev Environment..."
-          pm2 delete greetings-app-dev || true
+          echo Deploying to Dev Environment...
+          pm2 delete greetings-app-dev || exit /b 0
           pm2 start app.py --name greetings-app-dev -- --port 7001
 
   tests-on-dev:
@@ -57,8 +59,9 @@ jobs:
 
       - name: Run Dev Environment Tests
         working-directory: test-framework
+        shell: cmd
         run: |
-          echo "Running tests on Dev Environment..."
+          echo Running tests on Dev Environment...
           npm install
           npm run greetings greetings_dev
 
@@ -77,9 +80,10 @@ jobs:
 
       - name: Deploy to Staging Environment
         working-directory: python-greetings
+        shell: cmd
         run: |
-          echo "Deploying to Staging Environment..."
-          pm2 delete greetings-app-staging || true
+          echo Deploying to Staging Environment...
+          pm2 delete greetings-app-staging || exit /b 0
           pm2 start app.py --name greetings-app-staging -- --port 7002
 
   tests-on-staging:
@@ -97,8 +101,9 @@ jobs:
 
       - name: Run Staging Environment Tests
         working-directory: test-framework
+        shell: cmd
         run: |
-          echo "Running tests on Staging Environment..."
+          echo Running tests on Staging Environment...
           npm install
           npm run greetings greetings_staging
 
@@ -117,9 +122,10 @@ jobs:
 
       - name: Deploy to PreProd Environment
         working-directory: python-greetings
+        shell: cmd
         run: |
-          echo "Deploying to PreProd Environment..."
-          pm2 delete greetings-app-preprod || true
+          echo Deploying to PreProd Environment...
+          pm2 delete greetings-app-preprod || exit /b 0
           pm2 start app.py --name greetings-app-preprod -- --port 7003
 
   tests-on-preprod:
@@ -137,8 +143,9 @@ jobs:
 
       - name: Run PreProd Environment Tests
         working-directory: test-framework
+        shell: cmd
         run: |
-          echo "Running tests on PreProd Environment..."
+          echo Running tests on PreProd Environment...
           npm install
           npm run greetings greetings_preprod
 
@@ -157,9 +164,10 @@ jobs:
 
       - name: Deploy to Prod Environment
         working-directory: python-greetings
+        shell: cmd
         run: |
-          echo "Deploying to Prod Environment..."
-          pm2 delete greetings-app-prod || true
+          echo Deploying to Prod Environment...
+          pm2 delete greetings-app-prod || exit /b 0
           pm2 start app.py --name greetings-app-prod -- --port 7004
 
   tests-on-prod:
@@ -177,7 +185,8 @@ jobs:
 
       - name: Run Prod Environment Tests
         working-directory: test-framework
+        shell: cmd
         run: |
-          echo "Running tests on Prod Environment..."
+          echo Running tests on Prod Environment...
           npm install
           npm run greetings greetings_prod
